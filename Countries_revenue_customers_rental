@@ -1,0 +1,24 @@
+This query returns total revenue, total customers, average rental duration, and total rental duration of all customer countries 
+
+WITH country_customers_payments (country,rental_id)
+AS
+(SELECT F.country, B.rental_id  
+FROM payment A 
+INNER JOIN rental B ON A.rental_id = B.rental_id 
+INNER JOIN customer C ON B.customer_id = C.customer_id
+INNER JOIN address D ON C.address_id = D.address_id
+INNER JOIN city E ON D.city_id = E.city_id
+INNER JOIN country F ON E.country_id = F.country_id
+GROUP BY F.country,  B.rental_id)
+
+SELECT A.country, SUM(B.amount) AS total_payment_amount, 
+COUNT(DISTINCT B.customer_id) AS total_distinct_customers, 
+AVG(E.rental_duration) AS avg_rental_duration,
+SUM(E.rental_duration) AS total_rental_duration
+FROM country_customers_payments A
+INNER JOIN payment B ON A.rental_id = B.rental_id 
+INNER JOIN rental C ON B.rental_id = C.rental_id 
+INNER JOIN inventory D ON C.inventory_id = D.inventory_id  
+INNER JOIN film E ON D.film_id = E.film_id 
+GROUP BY A.country
+ORDER BY total_distinct_customers DESC
