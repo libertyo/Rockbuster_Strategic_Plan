@@ -1,0 +1,15 @@
+Query finds the top 5 customers in the top 10 cities who have paid the highest total amounts to Rockbuster
+
+SELECT A.customer_id, B.first_name, B.last_name, D.city, E.country,
+SUM(amount) AS total_customer_payment 
+FROM payment A
+INNER JOIN customer B ON A.customer_id = B.customer_id
+INNER JOIN address C ON B.address_id = C.address_id 
+INNER JOIN city D ON C.city_id = D.city_id 
+INNER JOIN country E ON D.country_id = E.country_id 
+WHERE city IN ('Aurora', 'Acua', 'Citrus Heights', 'Iwaki',
+"			  'Ambattur', 'Shanwei','So Leopoldo','Teboksary',"
+"			  'Tianjin','Cianjur')"
+GROUP BY A.customer_id, B.first_name,B.last_name, D.city, E.country
+ORDER BY SUM(amount) DESC
+LIMIT 5 
